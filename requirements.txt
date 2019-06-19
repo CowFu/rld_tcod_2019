@@ -1,0 +1,4 @@
+cffi==1.12.3
+numpy==1.16.4
+pycparser==2.19
+tcod==11.0.0
