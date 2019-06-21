@@ -1,12 +1,15 @@
 import tcod
+from entity import Entity
 from input_handlers import handle_keys
 
 def main():
     screen_width = 80
     screen_height = 50
 
-    player_x = int(screen_width / 2)
-    player_y = int(screen_height / 2)
+    player = Entity(int(screen_width / 2), int(screen_height / 2), '@', tcod.white)
+    npc = Entity(int(screen_width / 2 - 5), int(screen_height / 2), '@', tcod.yellow)
+
+    entities = [npc, player]
 
     tcod.console_set_custom_font('.\\assets\\fonts\\arial10x10.png', 
                                   tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD)
@@ -25,11 +28,11 @@ def main():
         tcod.sys_check_for_event(tcod.EVENT_KEY_PRESS, key, mouse)
 
         tcod.console_set_default_foreground(con, tcod.white)
-        tcod.console_put_char(con, player_x, player_y, '@', tcod.BKGND_NONE)
+        tcod.console_put_char(con, player.x, player.y, '@', tcod.BKGND_NONE)
         tcod.console_blit(con, 0, 0, screen_width, screen_height, 0, 0, 0)
         tcod.console_flush()
 
-        tcod.console_put_char(con, player_x, player_y, ' ', tcod.BKGND_NONE)
+        tcod.console_put_char(con, player.x, player.y, ' ', tcod.BKGND_NONE)
 
         action = handle_keys(key)
 
@@ -40,8 +43,7 @@ def main():
 
         if move:
             dx, dy = move
-            player_x += dx
-            player_y += dy
+            player.move(dx,dy)
 
         if exit:
             return True
