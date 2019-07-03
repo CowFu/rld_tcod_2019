@@ -22,8 +22,6 @@ class GameMap:
         rooms = []
         num_rooms = 0
 
-        print("make_map called")
-
         for r in range(max_rooms):
             # random width and height
             w = randint(room_min_size, room_max_size)
@@ -36,8 +34,6 @@ class GameMap:
             print ('calling new_room %d %d %d %d' % (x,y,w,h))
             # 'Rect' class makes rectangels easier to work with
             new_room = Rect(x, y, w, h)
-
-            print(new_room)
 
             # run through existing rooms and see if they intersect with the new one
             for other_room in rooms:
