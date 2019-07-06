@@ -1,6 +1,7 @@
 import tcod
-from entity import Entity
+from entity import Entity, get_blocking_entites_at_location
 from fov_functions import initialize_fov, recompute_fov
+from game_states import GameStates
 from input_handlers import handle_keys
 from render_functions import render_all, clear_all
 from map_objects.game_map import GameMap
@@ -19,6 +20,8 @@ def main():
     fov_light_walls = True
     fov_radius = 10
 
+    max_monsters_per_room = 5
+
     colors = {
         'dark_wall': tcod.Color(0, 0, 100),
         'dark_ground': tcod.Color(50, 50, 150),
@@ -26,10 +29,8 @@ def main():
         'light_ground': tcod.Color(200, 180, 50)
     }
 
-    player = Entity(int(screen_width / 2), int(screen_height / 2), '@', tcod.white)
-    npc = Entity(int(screen_width / 2 - 5), int(screen_height / 2), '@', tcod.yellow)
-
-    entities = [npc, player]
+    player = Entity(0, 0, '@', tcod.white, 'Player', blocks=True)
+    entities = [player]
 
     tcod.console_set_custom_font('.\\assets\\fonts\\arial10x10.png', 
                                   tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD)
@@ -42,7 +43,8 @@ def main():
     con = tcod.console_new(screen_width, screen_height)
 
     game_map = GameMap(map_width, map_height)
-    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player)
+    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height,
+                      player, entities, max_monsters_per_room)
 
     fov_recompute = True
 
@@ -51,13 +53,13 @@ def main():
     key = tcod.Key()
     mouse = tcod.Mouse()
 
+    game_state = GameStates.PLAYERS_TURN
+
     while not tcod.console_is_window_closed():
         tcod.sys_check_for_event(tcod.EVENT_KEY_PRESS, key, mouse)
 
         if fov_recompute:
-            print('fov_recompute:')
             recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
-            print('done')
 
         render_all(con, entities, game_map, fov_map, fov_recompute, screen_width, screen_height, colors)
 
@@ -74,17 +76,34 @@ def main():
         fullscreen = action.get('fullscreen')
         msg = action.get('msg')
 
-        if move:
+        if move and game_state == GameStates.PLAYERS_TURN:
             dx, dy = move
-            if not game_map.is_blocked(player.x + dx, player.y + dy):
-                player.move(dx, dy)
-                fov_recompute = True
+            destination_x = player.x + dx
+            destination_y = player.y + dy
+
+            if not game_map.is_blocked(destination_x, destination_y):
+                target = get_blocking_entites_at_location(entities, destination_x, destination_y)
+
+                if target:
+                    print(' You kick the %s in the shins, it frowns at you!' % (target.name))
+                else:
+                    player.move(dx, dy)
+                    fov_recompute = True
+                
+                game_state = GameStates.ENEMY_TURN
 
         if exit:
             return True
 
         if fullscreen:
             tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
+
+        if game_state == GameStates.ENEMY_TURN:
+            for entity in entities:
+                if entity != player:
+                    print('The %s ponders the meaning of its existence.' % (entity.name))
+
+            game_state = GameStates.PLAYERS_TURN
 
         if msg:
             tcod.console_print(con, 1, 1, '                  ')
