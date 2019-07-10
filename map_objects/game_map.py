@@ -102,11 +102,11 @@ class GameMap:
             x = randint(room.x1 + 1, room.x2 - 1)
             y = randint(room.y1 + 1, room.y2 - 1)
 
-            if not any([entity for entity in entities if  entity.x == x and entity.y == y]):
+            if not any([entity for entity in entities if entity.x == x and entity.y == y]):
                 if randint(0, 100) < 80:
-                    monster = Entity(x, y, 'o', tcod.desaturated_green, 'Orc', blocks=True)
+                    monster = Entity(x, y, 'o', tcod.desaturated_green, 'Orc', blocks=True, entityID=len(entities))
                 else:
-                    monster = Entity(x, y, 'T', tcod.darker_green, 'Troll', blocks=True)
+                    monster = Entity(x, y, 'T', tcod.darker_green, 'Troll', blocks=True, entityID=len(entities))
 
                 entities.append(monster)
 

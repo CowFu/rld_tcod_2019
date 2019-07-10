@@ -13,7 +13,7 @@ def main():
     map_height = 45
     
     room_max_size = 10
-    room_min_size = 6
+    room_min_size = 2
     max_rooms = 30
 
     fov_algorithm = 0
@@ -85,29 +85,33 @@ def main():
                 target = get_blocking_entites_at_location(entities, destination_x, destination_y)
 
                 if target:
-                    print(' You kick the %s in the shins, it frowns at you!' % (target.name))
+                    print(' You kick the %s%d in the shins, it frowns at you!' % (target.name, target.entityID))
                 else:
                     player.move(dx, dy)
                     fov_recompute = True
                 
                 game_state = GameStates.ENEMY_TURN
+                print('Enemy Turn!')
 
         if exit:
+            print('Thanks for playing!')
             return True
 
         if fullscreen:
             tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
 
         if game_state == GameStates.ENEMY_TURN:
-            for entity in entities:
-                if entity != player:
-                    print('The %s ponders the meaning of its existence.' % (entity.name))
-
+            # for entity in entities:
+                # if entity != player:
+                    # print('The %s%d ponders the meaning of its existence.' % (entity.name, entity.entityID))
+                
             game_state = GameStates.PLAYERS_TURN
+            print('Player Turn!')
 
         if msg:
             tcod.console_print(con, 1, 1, '                  ')
             tcod.console_print(con, 1, 1, msg)
+    print('window was closed')
     
 if __name__ == '__main__':
     main()
