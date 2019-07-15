@@ -2,6 +2,9 @@
 from random import randint
 import tcod
 
+from components.ai import BasicMonster
+from components.fighter import Fighter
+
 # imports from /map_objects
 from map_objects.tile import Tile
 from map_objects.rectangle import Rect
@@ -35,7 +38,8 @@ class GameMap:
 
             # 'Rect' class makes rectangels easier to work with
             new_room = Rect(x, y, w, h)
-
+            center_x, center_y = 0,0
+            prev_x, prev_y = 0,0
             # run through existing rooms and see if they intersect with the new one
             for other_room in rooms:
                 if new_room.intersect(other_room):
@@ -104,9 +108,17 @@ class GameMap:
 
             if not any([entity for entity in entities if entity.x == x and entity.y == y]):
                 if randint(0, 100) < 80:
-                    monster = Entity(x, y, 'o', tcod.desaturated_green, 'Orc', blocks=True, entityID=len(entities))
+                    fighter_component = Fighter(hp=10, defense=0, power=3)
+                    ai_component = BasicMonster()
+
+                    monster = Entity(x, y, 'o', tcod.desaturated_green, 'Orc', blocks=True, 
+                                     fighter=fighter_component, ai=ai_component, entityID=len(entities))
                 else:
-                    monster = Entity(x, y, 'T', tcod.darker_green, 'Troll', blocks=True, entityID=len(entities))
+                    fighter_component = Fighter(hp=16, defense=1, power=4)
+                    ai_component = BasicMonster()
+
+                    monster = Entity(x, y, 'T', tcod.darker_green, 'Troll', blocks=True,
+                                     fighter=fighter_component, ai=ai_component, entityID=len(entities))
 
                 entities.append(monster)
 

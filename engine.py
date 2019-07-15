@@ -5,6 +5,7 @@ from game_states import GameStates
 from input_handlers import handle_keys
 from render_functions import render_all, clear_all
 from map_objects.game_map import GameMap
+from components.fighter import Fighter
 
 def main():
     screen_width = 80
@@ -13,7 +14,7 @@ def main():
     map_height = 45
     
     room_max_size = 10
-    room_min_size = 2
+    room_min_size = 4
     max_rooms = 30
 
     fov_algorithm = 0
@@ -29,7 +30,8 @@ def main():
         'light_ground': tcod.Color(200, 180, 50)
     }
 
-    player = Entity(0, 0, '@', tcod.white, 'Player', blocks=True)
+    fighter_component = Fighter(hp=30, defense=2, power=5)
+    player = Entity(0, 0, '@', tcod.white, 'Player', blocks=True, fighter=fighter_component)
     entities = [player]
 
     tcod.console_set_custom_font('.\\assets\\fonts\\arial10x10.png', 
@@ -101,9 +103,9 @@ def main():
             tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
 
         if game_state == GameStates.ENEMY_TURN:
-            # for entity in entities:
-                # if entity != player:
-                    # print('The %s%d ponders the meaning of its existence.' % (entity.name, entity.entityID))
+            for entity in entities:
+                if entity.ai:
+                    entity.ai.take_turn(player, fov_map, game_map, entities)
                 
             game_state = GameStates.PLAYERS_TURN
             print('Player Turn!')
