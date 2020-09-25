@@ -10,6 +10,7 @@ from map_objects.tile import Tile
 from map_objects.rectangle import Rect
 from entity import Entity
 
+
 class GameMap:
     def __init__(self, width, height):
         self.width = width
@@ -38,8 +39,8 @@ class GameMap:
 
             # 'Rect' class makes rectangels easier to work with
             new_room = Rect(x, y, w, h)
-            center_x, center_y = 0,0
-            prev_x, prev_y = 0,0
+            center_x, center_y = 0, 0
+            prev_x, prev_y = 0, 0
             # run through existing rooms and see if they intersect with the new one
             for other_room in rooms:
                 if new_room.intersect(other_room):
@@ -72,13 +73,12 @@ class GameMap:
                         # first move vertically, then horizontal
                         self.create_v_tunnel(prev_y, center_y, center_x)
                         self.create_h_tunnel(prev_x, center_x, prev_y)
-                
+
                 self.place_entities(new_room, entities, max_monsters_per_room)
 
                 # finally, append the new room to the list
                 rooms.append(new_room)
                 num_rooms += 1
-
 
     def create_room(self, room):
         # go through the list of tiles in the rectangle and make them passable
@@ -88,7 +88,7 @@ class GameMap:
                 self.tiles[x][y].block_sight = False
 
     def create_h_tunnel(self, x1, x2, y):
-        for x in range(min(x1, x2), max(x1, x2) +1):
+        for x in range(min(x1, x2), max(x1, x2) + 1):
             self.tiles[x][y].blocked = False
             self.tiles[x][y].block_sight = False
 
@@ -111,7 +111,7 @@ class GameMap:
                     fighter_component = Fighter(hp=10, defense=0, power=3)
                     ai_component = BasicMonster()
 
-                    monster = Entity(x, y, 'o', tcod.desaturated_green, 'Orc', blocks=True, 
+                    monster = Entity(x, y, 'o', tcod.desaturated_green, 'Orc', blocks=True,
                                      fighter=fighter_component, ai=ai_component, entityID=len(entities))
                 else:
                     fighter_component = Fighter(hp=16, defense=1, power=4)

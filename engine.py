@@ -7,12 +7,13 @@ from render_functions import render_all, clear_all
 from map_objects.game_map import GameMap
 from components.fighter import Fighter
 
+
 def main():
     screen_width = 80
     screen_height = 50
     map_width = 80
     map_height = 45
-    
+
     room_max_size = 10
     room_min_size = 4
     max_rooms = 30
@@ -21,7 +22,7 @@ def main():
     fov_light_walls = True
     fov_radius = 10
 
-    max_monsters_per_room = 5
+    max_monsters_per_room = 3
 
     colors = {
         'dark_wall': tcod.Color(0, 0, 100),
@@ -34,14 +35,14 @@ def main():
     player = Entity(0, 0, '@', tcod.white, 'Player', blocks=True, fighter=fighter_component)
     entities = [player]
 
-    tcod.console_set_custom_font('.\\assets\\fonts\\arial10x10.png', 
-                                  tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD)
-    
+    tcod.console_set_custom_font('.\\assets\\fonts\\arial10x10.png',
+                                 tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD)
+
     tcod.console_init_root(screen_width,
                            screen_height,
                            'libtcod tutorial revised',
                            fullscreen=False)
-    
+
     con = tcod.console_new(screen_width, screen_height)
 
     game_map = GameMap(map_width, map_height)
@@ -87,11 +88,11 @@ def main():
                 target = get_blocking_entites_at_location(entities, destination_x, destination_y)
 
                 if target:
-                    print(' You kick the %s%d in the shins, it frowns at you!' % (target.name, target.entityID))
+                    player.fighter.attack(target)
                 else:
                     player.move(dx, dy)
                     fov_recompute = True
-                
+
                 game_state = GameStates.ENEMY_TURN
                 print('Enemy Turn!')
 
@@ -106,7 +107,7 @@ def main():
             for entity in entities:
                 if entity.ai:
                     entity.ai.take_turn(player, fov_map, game_map, entities)
-                
+
             game_state = GameStates.PLAYERS_TURN
             print('Player Turn!')
 
@@ -114,6 +115,7 @@ def main():
             tcod.console_print(con, 1, 1, '                  ')
             tcod.console_print(con, 1, 1, msg)
     print('window was closed')
-    
+
+
 if __name__ == '__main__':
     main()

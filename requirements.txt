@@ -1,4 +1,8 @@
-cffi==1.12.3
-numpy==1.16.4
-pycparser==2.19
-tcod==11.0.0
+cffi==1.14.3
+flake8==3.8.3
+mccabe==0.6.1
+numpy==1.19.2
+pycodestyle==2.6.0
+pycparser==2.20
+pyflakes==2.2.0
+tcod==11.15.3

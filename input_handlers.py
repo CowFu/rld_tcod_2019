@@ -1,7 +1,8 @@
 import tcod
 
+
 def handle_keys(key):
-    #normal keypress
+    # normal keypress
     key_press = {
         # movement
         # up
@@ -45,17 +46,16 @@ def handle_keys(key):
         tcod.KEY_1: {'msg': 'ctrl + alt and 1'}
     }
 
-    if(key.vk==65):
+    if(key.vk == 65):
         keypress = chr(key.c)
     else:
         keypress = key.vk
-
 
     if key.lalt or key.ralt:
         if key.lctrl or key.rctrl:
             return both_key_press.get(keypress, {})
         return alt_key_press.get(keypress, {})
-        
+
     if key.lctrl or key.rctrl:
         return ctrl_key_press.get(keypress, {})
     return key_press.get(keypress, {})
